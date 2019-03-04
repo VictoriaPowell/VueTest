@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="../css/main.css">
+
+<div id="app">
+    <div class="container">
+
+        <h2 v-show="submitted" v-cloak class="mt-5">Thank You for Signing Up!</h2>
+        <div class="card mt-5">
+            <h2 class="card-header">Near-Earth Objects</h2>
+            <table class="table">
+                <thead class="thead-light">
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Close Approach Date</th>
+                    <th>Miss Distance</th>
+                </thead>
+                <tbody v-cloak>
+                    <tr v-for="(a,index) in asteroids">
+                        <td>{{index + 1}}</td>
+                        <td>{{a.name}}</td>
+                        <td>{{getCloseApproachDate(a)}}</td>
+                        <td>
+                            <ul v-if="a.close_approach_data.length > 0">
+                                <li v-for="(value,key) in a.close_approach_data[0].miss_distance">
+                                    {{key}}:{{value}}
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br /><img :src="imgSrc" :title="imgTitle"><br />
+
+        <form v-show="!submitted" class="mt-5">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" v-model:value="email" class="form-control form-control-lg">
+            </div>
+            <button type="submit" v-on:click.prevent="processSubmit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.8/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            email: 'anonymous@example.com',
+            submitted: false,
+            imgSrc: '',
+            imgTitle: '',
+            asteroids: []
+        },
+        created: function () {
+            this.fetchApod();
+            this.fetchMeteor();
+        },
+        methods: {
+            processSubmit: function() {
+                this.submitted = true;
+            },
+            fetchApod: function() {
+                var apiKeyNASA = "T4UuzeSu0ti874ibE2PvT7pUS0YYrlxHaUFIH6oa";
+                var urlPOD = 'https://api.nasa.gov/planetary/apod?api_key=' + apiKeyNASA;
+
+                axios.get(urlPOD)
+                    .then(function (res){
+                        vm.imgSrc = res.data.url;
+                        vm.imgTitle = res.data.title;
+                    });
+            },
+            fetchMeteor: function() {
+                var apiKeyNASA = "T4UuzeSu0ti874ibE2PvT7pUS0YYrlxHaUFIH6oa";
+                var urlMeteor = 'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=' + apiKeyNASA;
+
+                axios.get(urlMeteor)
+                    .then(function (res){
+                        vm.asteroids = res.data.near_earth_objects.slice(0, 10);
+                    });
+            },
+            getCloseApproachDate: function(a){
+                if(a.close_approach_data.length > 0){
+                    return a.close_approach_data[0].close_approach_date;
+                }
+                return 'N/A';
+            }
+        }
+    });
+
+
+</script>
