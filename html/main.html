@@ -8,15 +8,19 @@
         <h2 v-show="submitted" v-cloak class="mt-5">Thank You for Signing Up!</h2>
         <div class="card mt-5">
             <h2 class="card-header">Near-Earth Objects</h2>
+            <div class="m-3" v-cloak v-if="numAsteroids > 0">
+                <p> showing {{numAsteroids}} items</p>
+            </div>
             <table class="table">
                 <thead class="thead-light">
                     <th>#</th>
                     <th>Name</th>
                     <th>Close Approach Date</th>
                     <th>Miss Distance</th>
+                    <th>Remove</th>
                 </thead>
                 <tbody v-cloak>
-                    <tr v-for="(a,index) in asteroids">
+                    <tr v-for="(a,index) in asteroids" :key="a.neo_reference_id">
                         <td>{{index + 1}}</td>
                         <td>{{a.name}}</td>
                         <td>{{getCloseApproachDate(a)}}</td>
@@ -27,6 +31,7 @@
                                 </li>
                             </ul>
                         </td>
+                        <td><button @click="removeAsteroid(index)" class="btn btn-warning">remove</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -56,6 +61,11 @@
             imgSrc: '',
             imgTitle: '',
             asteroids: []
+        },
+        computed: {
+          numAsteroids: function () {
+              return this.asteroids.length;
+          }
         },
         created: function () {
             this.fetchApod();
@@ -89,6 +99,9 @@
                     return a.close_approach_data[0].close_approach_date;
                 }
                 return 'N/A';
+            },
+            removeAsteroid: function(index) {
+                this.asteroids.splice(index, 1);
             }
         }
     });
