@@ -10,8 +10,9 @@
             <h2 class="card-header">Near-Earth Objects</h2>
             <div class="m-3" v-cloak v-if="numAsteroids > 0">
                 <p> showing {{numAsteroids}} items</p>
+                <p>{{closestObject}} has the shortest miss distance</p>
             </div>
-            <table class="table">
+            <table class="table table-striped">
                 <thead class="thead-light">
                     <th>#</th>
                     <th>Name</th>
@@ -20,7 +21,8 @@
                     <th>Remove</th>
                 </thead>
                 <tbody v-cloak>
-                    <tr v-for="(a,index) in asteroids" :key="a.neo_reference_id">
+                    <tr v-for="(a,index) in asteroids" :key="a.neo_reference_id" :style="getRowStyle(a)"
+                        style="color:forestgreen">
                         <td>{{index + 1}}</td>
                         <td>{{a.name}}</td>
                         <td>{{getCloseApproachDate(a)}}</td>
@@ -63,9 +65,21 @@
             asteroids: []
         },
         computed: {
-          numAsteroids: function () {
+            numAsteroids: function () {
               return this.asteroids.length;
-          }
+            },
+            closestObject: function () {
+                let neosHavingData = this.asteroids.filter(function (neo){
+                    return neo.close_approach_data.length > 0;
+                });
+                let simpleNeos = neosHavingData.map(function (neo){
+                    return {name: neo.name, miles: neo.close_approach_data[0].miss_distance.miles};
+                });
+                let sortedNeos = simpleNeos.sort(function (a,b){
+                    return a.miles - b.miles;
+                });
+                return sortedNeos[0].name;
+            }
         },
         created: function () {
             this.fetchApod();
@@ -76,8 +90,8 @@
                 this.submitted = true;
             },
             fetchApod: function() {
-                var apiKeyNASA = "T4UuzeSu0ti874ibE2PvT7pUS0YYrlxHaUFIH6oa";
-                var urlPOD = 'https://api.nasa.gov/planetary/apod?api_key=' + apiKeyNASA;
+                let apiKeyNASA = "T4UuzeSu0ti874ibE2PvT7pUS0YYrlxHaUFIH6oa";
+                let urlPOD = 'https://api.nasa.gov/planetary/apod?api_key=' + apiKeyNASA;
 
                 axios.get(urlPOD)
                     .then(function (res){
@@ -86,12 +100,12 @@
                     });
             },
             fetchMeteor: function() {
-                var apiKeyNASA = "T4UuzeSu0ti874ibE2PvT7pUS0YYrlxHaUFIH6oa";
-                var urlMeteor = 'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=' + apiKeyNASA;
+                let apiKeyNASA = "T4UuzeSu0ti874ibE2PvT7pUS0YYrlxHaUFIH6oa";
+                let urlMeteor = 'https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=' + apiKeyNASA;
 
                 axios.get(urlMeteor)
                     .then(function (res){
-                        vm.asteroids = res.data.near_earth_objects.slice(0, 10);
+                        vm.asteroids = res.data.near_earth_objects.slice(0, 20);
                     });
             },
             getCloseApproachDate: function(a){
@@ -102,6 +116,14 @@
             },
             removeAsteroid: function(index) {
                 this.asteroids.splice(index, 1);
+            },
+            getRowStyle: function(a) {
+                if (a.close_approach_data.length == 0){
+                    return {
+                        border: 'solid 3px red',
+                        color: 'red'
+                    };
+                }
             }
         }
     });
