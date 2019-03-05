@@ -3,6 +3,7 @@
 }
 div#app {
     padding-bottom: 5px;
+    padding-top: 5px;
 }
 .highlight {
     border: solid 3px red;
@@ -37,7 +38,7 @@ div#app {
         transform: scale(1) rotate(0);
     }
     50% {
-        transform: scale(10) rotate(360deg);
+        transform: scale(3) rotate(360deg);
     }
     100% {
         transform: scale(1) rotate(1080deg);
