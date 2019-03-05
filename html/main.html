@@ -7,10 +7,20 @@
 
         <h2 v-show="submitted" v-cloak class="mt-5">Thank You for Signing Up!</h2>
         <div class="card mt-5">
-            <h2 class="card-header">Near-Earth Objects</h2>
-            <div class="m-3" v-cloak v-if="numAsteroids > 0">
-                <p> showing {{numAsteroids}} items</p>
-                <p>{{closestObject}} has the shortest miss distance</p>
+            <h2 class="card-header">
+                Near-Earth
+                <transition name="spin" appear>
+                    <span style="display:inline-block">Objects</span>
+                </transition>
+            </h2>
+            <transition name="shooting-star">
+                <div class="m-3" v-cloak v-if="numAsteroids > 0 && showSummary">
+                    <p> showing {{numAsteroids}} items</p>
+                    <p>{{closestObject}} has the shortest miss distance</p>
+                </div>
+            </transition>
+            <div class="m-3">
+                <a href="#" @click="showSummary = !showSummary">Show/hide summary</a>
             </div>
             <table class="table table-striped" :class="[{'table-dark': false}, 'table-bordered']">
                 <thead class="thead-light">
@@ -20,7 +30,7 @@
                     <th>Miss Distance</th>
                     <th>Remove</th>
                 </thead>
-                <tbody v-cloak>
+                <tbody is="transition-group" tag="tbody" name="neo-list" v-cloak>
                     <tr v-for="(a,index) in asteroids" :key="a.neo_reference_id"
                         :class="{highlight:isMissingData(a), 'shadow-sm':true}">
                         <td>{{index + 1}}</td>
@@ -62,7 +72,8 @@
             submitted: false,
             imgSrc: '',
             imgTitle: '',
-            asteroids: []
+            asteroids: [],
+            showSummary: true
         },
         computed: {
             numAsteroids: function () {
