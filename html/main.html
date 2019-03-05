@@ -5,8 +5,15 @@
 <div id="app">
     <div class="container">
         <h2 v-show="submitted" v-cloak class="mt-5">Thank You for Signing Up!</h2>
-        <a-pod></a-pod>
-        <a-pod date="2018-08-07"></a-pod>
+        <asteroid-grid :asteroids="asteroids" header="Near-Earth Objects"></asteroid-grid>
+        <a-pod>
+            <h3 slot="title">#1</h3>
+            <p slot="caption">Here's todays Astronomy Picture of the Day!</p>
+        </a-pod>
+        <a-pod date="2018-08-07">
+            <h3 slot="title">#2</h3>
+            <p slot="caption" slot-scope="pic">Here's the picture from {{pic.date}}</p>
+        </a-pod>
         <another-component></another-component>
         <my-component v-for="i in 10"></my-component>
         <div class="card mt-5">
@@ -51,9 +58,6 @@
                 </tbody>
             </table>
         </div>
-
-        <br /><img :src="imgSrc" :title="imgTitle"><br />
-
         <form v-show="!submitted" class="mt-5">
             <div class="form-group">
                 <label for="email">Email</label>
@@ -67,4 +71,5 @@
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.8/dist/vue.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="../js/AsteroidGrid.js"></script>
 <script src="../js/main.js"></script>

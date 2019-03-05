@@ -1,8 +1,9 @@
 Vue.component('a-pod', {
     template: '' +
         '<div>' +
-            '<img :src="imgSrc" :title="imgTitle">' +
-            '<p>{{date || "today"}}</p></div>',
+            '<slot name="title"><h3>Untitled</h3></slot>' +
+            '<img width="300" height="200" :src="imgSrc" :title="imgTitle">' +
+            '<slot name="caption" :date="date"><p>unknown date</p></slot></div>',
     props: ['date'],
     data: function() {
         return {
