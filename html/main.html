@@ -5,7 +5,7 @@
 <div id="app">
     <div class="container">
         <h2 v-show="submitted" v-cloak class="mt-5">Thank You for Signing Up!</h2>
-        <asteroid-grid :asteroids="asteroids" header="Near-Earth Objects"></asteroid-grid>
+        <asteroid-grid @remove="removeAsteroid" :asteroids="asteroids" header="Near-Earth Objects"></asteroid-grid>
         <a-pod>
             <h3 slot="title">#1</h3>
             <p slot="caption">Here's todays Astronomy Picture of the Day!</p>
